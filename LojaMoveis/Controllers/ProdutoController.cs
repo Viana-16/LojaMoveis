@@ -53,8 +53,7 @@ namespace LojaMoveis.Controllers
         {
             var produto = await _produtoService.GetByIdAsync(id);
             if (produto == null)
-                return NotFound();
-
+            return NotFound();
             await _produtoService.DeleteAsync(id);
             return NoContent();
         }
