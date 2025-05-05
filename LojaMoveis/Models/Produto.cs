@@ -7,21 +7,11 @@ namespace LojaMoveis.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
+        public string Id { get; set; } = null!;
 
-        [BsonElement("nome")]
         public string Nome { get; set; } = null!;
-
-        [BsonElement("preco")]
-        public decimal Preco { get; set; }
-
-        [BsonElement("categoria")]
         public string Categoria { get; set; } = null!;
-
-        [BsonElement("descricao")]
-        public string? Descricao { get; set; }
-
-        [BsonElement("imagem")]
-        public string? Imagem { get; set; }
+        public decimal Preco { get; set; }
+        public string Descricao { get; set; } = null!;
     }
 }

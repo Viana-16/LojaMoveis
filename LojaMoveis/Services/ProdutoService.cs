@@ -8,33 +8,27 @@ namespace LojaMoveis.Services;
 
 public class ProdutoService
 {
-    private readonly IMongoCollection<Produto> _produtos;
+    private readonly IMongoCollection<Produto> _produtoCollection;
 
-    public ProdutoService(IOptions<MongoDbSettings> settings)
+    public ProdutoService(IOptions<MongoDbSettings> mongoDbSettings)
     {
-        var client = new MongoClient(settings.Value.ConnectionString);
-        var database = client.GetDatabase(settings.Value.DatabaseName);
-        _produtos = database.GetCollection<Produto>(settings.Value.ProdutoCollectionName);
+        var mongoClient = new MongoClient(mongoDbSettings.Value.ConnectionString);
+        var mongoDatabase = mongoClient.GetDatabase(mongoDbSettings.Value.DatabaseName);
+        _produtoCollection = mongoDatabase.GetCollection<Produto>("Produtos");
     }
 
     public async Task<List<Produto>> GetAsync() =>
-        await _produtos.Find(p => true).ToListAsync();
+        await _produtoCollection.Find(_ => true).ToListAsync();
 
     public async Task<Produto?> GetByIdAsync(string id) =>
-        await _produtos.Find(p => p.Id == id).FirstOrDefaultAsync();
+        await _produtoCollection.Find(p => p.Id == id).FirstOrDefaultAsync();
 
-    public async Task CreateAsync(Produto produto)
-    {
-        if (string.IsNullOrEmpty(produto.Id))
-        {
-            produto.Id = ObjectId.GenerateNewId().ToString();
-        }
-        await _produtos.InsertOneAsync(produto);
-    }
+    public async Task CreateAsync(Produto produto) =>
+        await _produtoCollection.InsertOneAsync(produto);
 
-    public async Task UpdateAsync(string id, Produto produto) =>
-        await _produtos.ReplaceOneAsync(p => p.Id == id, produto);
+    public async Task UpdateAsync(string id, Produto produtoAtualizado) =>
+        await _produtoCollection.ReplaceOneAsync(p => p.Id == id, produtoAtualizado);
 
     public async Task DeleteAsync(string id) =>
-        await _produtos.DeleteOneAsync(p => p.Id == id);
+        await _produtoCollection.DeleteOneAsync(p => p.Id == id);
 }
