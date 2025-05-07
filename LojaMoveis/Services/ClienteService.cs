@@ -34,6 +34,14 @@ public class ClienteService
     // Método para criar um cliente (com senha criptografada)
     public async Task CreateAsync(Cliente cliente)
     {
+        // Verifica se o cliente com o mesmo e-mail já existe antes de criar
+        var existingCliente = await _clienteCollection.Find(c => c.Email == cliente.Email).FirstOrDefaultAsync();
+        if (existingCliente != null)
+        {
+            // Retorna uma exceção com a mensagem de "e-mail já cadastrado"
+            throw new Exception("E-mail já cadastrado.");
+        }
+
         // Criptografando a senha do cliente antes de salvar
         cliente.Senha = BCrypt.Net.BCrypt.HashPassword(cliente.Senha);
         await _clienteCollection.InsertOneAsync(cliente);

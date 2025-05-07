@@ -1,29 +1,9 @@
 ﻿using LojaMoveis.Models;
 using LojaMoveis.Services;
 using Microsoft.AspNetCore.Mvc;
-using BCrypt.Net;
 
 namespace LojaMoveis.Controllers
 {
-    //[ApiController]
-    //[Route("api/[controller]")]
-    //public class ClienteController : ControllerBase
-    //{
-    //    private readonly ClienteService _clienteService;
-
-    //    public ClienteController(ClienteService clienteService)
-    //    {
-    //        _clienteService = clienteService;
-    //    }
-
-    //    // POST: api/Cliente
-    //    [HttpPost]
-    //    public async Task<IActionResult> Post([FromBody] Cliente cliente)
-    //    {
-    //        await _clienteService.CreateAsync(cliente);
-    //        return CreatedAtAction(nameof(GetById), new { id = cliente.Id }, cliente);
-    //    }
-
     [ApiController]
     [Route("api/[controller]")]
     public class ClienteController : ControllerBase
@@ -38,19 +18,19 @@ namespace LojaMoveis.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] Cliente cliente)
         {
-            // Verificar se já existe um cliente com o mesmo e-mail
-            var clienteExistente = await _clienteService.GetByEmailAsync(cliente.Email);
-            if (clienteExistente != null)
+            try
             {
-                return Conflict("E-mail já cadastrado.");
+                // Criptografa a senha e cria o cliente
+                await _clienteService.CreateAsync(cliente);
+                return Ok("Cliente cadastrado com sucesso!");
             }
-
-            // Criptografar a senha
-            cliente.Senha = BCrypt.Net.BCrypt.HashPassword(cliente.Senha);
-
-            await _clienteService.CreateAsync(cliente);
-            return Ok(cliente);
+            catch (Exception ex)
+            {
+                // Captura o erro de "e-mail já cadastrado" ou outro erro e retorna uma resposta apropriada
+                return BadRequest(ex.Message);  // Exibe a mensagem de erro que foi gerada na camada de serviço
+            }
         }
+
 
         // GET: api/Cliente
         [HttpGet]

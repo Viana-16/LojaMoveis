@@ -17,5 +17,11 @@ namespace LojaMoveis.Models
 
         [BsonElement("senha")]
         public string Senha { get; set; } = null!;
+
+        [BsonElement("cpf")]
+        public string Cpf { get; set; } = null!;
+
+        [BsonElement("telefone")]
+        public string Telefone { get; set; } = null!;
     }
 }
