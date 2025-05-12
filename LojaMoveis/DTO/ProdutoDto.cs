@@ -2,9 +2,11 @@
 {
     public class ProdutoDto
     {
-        public string Nome { get; set; } = null!;
-        public string Categoria { get; set; } = null!;
+        public string EmailAdmin { get; set; } = string.Empty;
+        public string Nome { get; set; } = string.Empty;
+        public string Descricao { get; set; } = string.Empty;
+        public string ImagemUrl { get; set; } = string.Empty;
         public decimal Preco { get; set; }
-        public string Descricao { get; set; } = null!;
+        public double Avaliacao { get; set; }
     }
 }

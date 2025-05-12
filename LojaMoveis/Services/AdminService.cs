@@ -1,7 +1,7 @@
-﻿using LojaMoveis.Configurations;
-using LojaMoveis.Models;
-using Microsoft.Extensions.Options;
+﻿using LojaMoveis.Models;
 using MongoDB.Driver;
+using Microsoft.Extensions.Options;
+using LojaMoveis.Configurations;
 
 namespace LojaMoveis.Services
 {
@@ -11,30 +11,34 @@ namespace LojaMoveis.Services
 
         public AdminService(IOptions<MongoDbSettings> mongoDbSettings)
         {
-            var client = new MongoClient(mongoDbSettings.Value.ConnectionString);
-            var database = client.GetDatabase(mongoDbSettings.Value.DatabaseName);
-            _adminCollection = database.GetCollection<Admin>("Admins");
+            var mongoClient = new MongoClient(mongoDbSettings.Value.ConnectionString);
+            var mongoDatabase = mongoClient.GetDatabase(mongoDbSettings.Value.DatabaseName);
+            _adminCollection = mongoDatabase.GetCollection<Admin>("Admins");
         }
+
         public async Task<Admin?> GetByEmailAsync(string email)
         {
-            return await _adminCollection.Find(a => a.Email == email).FirstOrDefaultAsync();
+            return await _adminCollection.Find(admin => admin.Email == email).FirstOrDefaultAsync();
         }
 
         public async Task<Admin?> LoginAsync(string email, string senha)
         {
-            var admin = await _adminCollection.Find(a => a.Email == email).FirstOrDefaultAsync();
-
-            if (admin is null || !BCrypt.Net.BCrypt.Verify(senha, admin.Senha))
-            {
-                return null;
-            }
+            // Busca o admin pelo email e senha
+            var admin = await _adminCollection
+                .Find(a => a.Email == email && a.Senha == senha)
+                .FirstOrDefaultAsync();
 
             return admin;
         }
 
         public async Task CadastrarAdminAsync(Admin admin)
         {
-            admin.Senha = BCrypt.Net.BCrypt.HashPassword(admin.Senha);
+            var existingAdmin = await GetByEmailAsync(admin.Email);
+            if (existingAdmin != null)
+            {
+                throw new InvalidOperationException("Admin com este email já existe.");
+            }
+
             await _adminCollection.InsertOneAsync(admin);
         }
     }
