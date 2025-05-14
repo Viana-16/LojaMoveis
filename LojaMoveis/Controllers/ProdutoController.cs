@@ -20,18 +20,9 @@ namespace LojaMoveis.Controllers
 
         // POST: api/Produto
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Produto produto, [FromQuery] string emailAdmin, [FromQuery] string senhaAdmin)
+        public async Task<IActionResult> AdicionarProduto([FromBody] Produto produto)
         {
-            // Verifica se o administrador existe com a senha e email fornecidos
-            var admin = await _adminService.LoginAsync(emailAdmin, senhaAdmin);
-
-            if (admin == null)
-            {
-                return Unauthorized("Apenas administradores podem adicionar produtos.");
-            }
-
-            // Caso o admin seja validado, o produto será adicionado
-            await _produtoService.CreateAsync(produto);
+            await _produtoService.CadastrarProdutoAsync(produto);
             return Ok("Produto adicionado com sucesso.");
         }
 

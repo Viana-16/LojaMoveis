@@ -23,6 +23,10 @@ namespace LojaMoveis.Services
 
         public async Task<Produto?> GetByIdAsync(string id) =>
             await _produtoCollection.Find(p => p.Id == id).FirstOrDefaultAsync();
+        public async Task CadastrarProdutoAsync(Produto produto)
+        {
+            await _produtoCollection.InsertOneAsync(produto);
+        }
 
         public async Task CreateAsync(Produto produto) =>
             await _produtoCollection.InsertOneAsync(produto);
