@@ -2,6 +2,10 @@
 using LojaMoveis.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using System;
 
 namespace LojaMoveis.Controllers
 {
@@ -11,11 +15,13 @@ namespace LojaMoveis.Controllers
     {
         private readonly ProdutoService _produtoService;
         private readonly AdminService _adminService;
+        private readonly IWebHostEnvironment _env;
 
-        public ProdutoController(ProdutoService produtoService, AdminService adminService)
+        public ProdutoController(ProdutoService produtoService, AdminService adminService, IWebHostEnvironment env)
         {
             _produtoService = produtoService;
             _adminService = adminService;
+            _env = env;
         }
 
         // POST: api/Produto
@@ -24,6 +30,32 @@ namespace LojaMoveis.Controllers
         {
             await _produtoService.CadastrarProdutoAsync(produto);
             return Ok("Produto adicionado com sucesso.");
+        }
+
+        // NOVO MÉTODO: POST com imagem
+        [HttpPost("com-imagem")]
+        public async Task<IActionResult> AdicionarProdutoComImagem([FromForm] Produto produto, IFormFile imagem)
+        {
+            if (imagem != null && imagem.Length > 0)
+            {
+                var nomeArquivo = Guid.NewGuid().ToString() + Path.GetExtension(imagem.FileName);
+                var caminhoPasta = Path.Combine(_env.WebRootPath, "imagens");
+
+                if (!Directory.Exists(caminhoPasta))
+                    Directory.CreateDirectory(caminhoPasta);
+
+                var caminhoCompleto = Path.Combine(caminhoPasta, nomeArquivo);
+
+                using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
+                {
+                    await imagem.CopyToAsync(stream);
+                }
+
+                produto.ImagemUrl = $"imagens/{nomeArquivo}";
+            }
+
+            await _produtoService.CadastrarProdutoAsync(produto);
+            return Ok("Produto com imagem adicionado com sucesso.");
         }
 
         // GET: api/Produto

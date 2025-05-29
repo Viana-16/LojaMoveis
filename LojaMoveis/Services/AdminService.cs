@@ -30,6 +30,7 @@ namespace LojaMoveis.Services
 
             return admin;
         }
+        
 
         public async Task CadastrarAdminAsync(Admin admin)
         {

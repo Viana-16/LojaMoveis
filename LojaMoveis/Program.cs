@@ -40,6 +40,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// HABILITA A SERVIR A PASTA wwwroot
+app.UseStaticFiles();
+
 // Ativa CORS ANTES do UseAuthorization
 app.UseCors("AllowFrontend");
 
