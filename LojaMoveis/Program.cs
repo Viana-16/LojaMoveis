@@ -6,11 +6,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Configura MongoDB Settings
 builder.Services.Configure<MongoDbSettings>(
     builder.Configuration.GetSection("MongoDbSettings"));
+builder.Services.Configure<MongoDbSettings>(
+    builder.Configuration.GetSection("MongoDbSettings"));
+
+
+
 
 // Injetar os serviços
 builder.Services.AddSingleton<ProdutoService>();
 builder.Services.AddSingleton<ClienteService>();
 builder.Services.AddSingleton<AdminService>();
+builder.Services.AddSingleton<EnderecoService>();
 
 
 // Configura CORS para permitir o front-end em http://localhost:5173
