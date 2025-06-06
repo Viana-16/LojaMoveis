@@ -31,5 +31,6 @@ namespace LojaMoveis.Controllers
             await _adminService.CadastrarAdminAsync(admin);
             return Ok(new { message = "Admin cadastrado" });
         }
+
     }
 }

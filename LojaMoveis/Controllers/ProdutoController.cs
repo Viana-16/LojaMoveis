@@ -33,30 +33,59 @@ namespace LojaMoveis.Controllers
         }
 
         // NOVO MÉTODO: POST com imagem
-        [HttpPost("com-imagem")]
+        //[HttpPost("com-imagem")]
+        //public async Task<IActionResult> AdicionarProdutoComImagem([FromForm] Produto produto, IFormFile imagem)
+        //{
+        //    if (imagem != null && imagem.Length > 0)
+        //    {
+        //        var nomeArquivo = Guid.NewGuid().ToString() + Path.GetExtension(imagem.FileName);
+        //        var caminhoPasta = Path.Combine(_env.WebRootPath, "imagens");
+
+        //        if (!Directory.Exists(caminhoPasta))
+        //            Directory.CreateDirectory(caminhoPasta);
+
+        //        var caminhoCompleto = Path.Combine(caminhoPasta, nomeArquivo);
+
+        //        using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
+        //        {
+        //            await imagem.CopyToAsync(stream);
+        //        }
+
+        //        produto.ImagemUrl = $"imagens/{nomeArquivo}";
+        //    }
+
+        //    await _produtoService.CadastrarProdutoAsync(produto);
+        //    return Ok("Produto com imagem adicionado com sucesso.");
+        //}
+
+
+
+        [HttpPost("upload")]
         public async Task<IActionResult> AdicionarProdutoComImagem([FromForm] Produto produto, IFormFile imagem)
         {
-            if (imagem != null && imagem.Length > 0)
+            if (imagem == null || imagem.Length == 0)
+                return BadRequest("Imagem não enviada.");
+
+            var pasta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imagens");
+            if (!Directory.Exists(pasta))
+                Directory.CreateDirectory(pasta);
+
+            var nomeArquivo = Guid.NewGuid().ToString() + Path.GetExtension(imagem.FileName);
+            var caminhoCompleto = Path.Combine(pasta, nomeArquivo);
+
+            using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
             {
-                var nomeArquivo = Guid.NewGuid().ToString() + Path.GetExtension(imagem.FileName);
-                var caminhoPasta = Path.Combine(_env.WebRootPath, "imagens");
-
-                if (!Directory.Exists(caminhoPasta))
-                    Directory.CreateDirectory(caminhoPasta);
-
-                var caminhoCompleto = Path.Combine(caminhoPasta, nomeArquivo);
-
-                using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
-                {
-                    await imagem.CopyToAsync(stream);
-                }
-
-                produto.ImagemUrl = $"imagens/{nomeArquivo}";
+                await imagem.CopyToAsync(stream);
             }
 
+            // URL para acessar a imagem
+            produto.ImagemUrl = $"imagens/{nomeArquivo}";
+
             await _produtoService.CadastrarProdutoAsync(produto);
-            return Ok("Produto com imagem adicionado com sucesso.");
+            return Ok(produto); // Retorna o produto completo
         }
+
+
 
         // GET: api/Produto
         [HttpGet]
@@ -101,5 +130,7 @@ namespace LojaMoveis.Controllers
             await _produtoService.DeleteAsync(id);
             return Ok("Produto removido com sucesso.");
         }
+
+
     }
 }
