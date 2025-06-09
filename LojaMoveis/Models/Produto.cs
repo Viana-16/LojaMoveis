@@ -21,6 +21,7 @@ namespace LojaMoveis.Models
 
         public string Categoria { get; set; }
 
-        public string ImagemUrl { get; set; } // Não coloque [Required]
+        public string? ImagemUrl { get; set; }
+
     }
 }
