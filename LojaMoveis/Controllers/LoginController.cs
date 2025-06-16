@@ -1,5 +1,6 @@
 ﻿using LojaMoveis.DTO;
 using LojaMoveis.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -72,7 +73,9 @@ namespace LojaMoveis.Controllers
 
 
         [HttpGet("perfil")]
-        public IActionResult Perfil()
+        [Authorize]
+        public async Task<IActionResult> Perfil()
+
         {
             var token = Request.Cookies["jwt"];
 
