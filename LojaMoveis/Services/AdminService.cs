@@ -20,6 +20,11 @@ namespace LojaMoveis.Services
         {
             return await _adminCollection.Find(admin => admin.Email == email).FirstOrDefaultAsync();
         }
+        public async Task UpdateAsync(string id, Admin adminAtualizado)
+        {
+            await _adminCollection.ReplaceOneAsync(a => a.Id == id, adminAtualizado);
+        }
+
 
         public async Task<Admin?> LoginAsync(string email, string senha)
         {

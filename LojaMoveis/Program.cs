@@ -75,6 +75,8 @@ builder.Services.AddSingleton<AdminService>();
 builder.Services.AddSingleton<EnderecoService>();
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
 builder.Services.AddSingleton<CloudinaryService>();
+builder.Services.AddSingleton<ResetTokenService>();
+builder.Services.AddSingleton<EmailService>();
 
 // Configura CORS para permitir o front-end em http://localhost:5173
 builder.Services.AddCors(options =>
