@@ -68,6 +68,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<MongoDbSettings>(
     builder.Configuration.GetSection("MongoDbSettings"));
 
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+
 // Injetar os serviços
 builder.Services.AddSingleton<ProdutoService>();
 builder.Services.AddSingleton<ClienteService>();

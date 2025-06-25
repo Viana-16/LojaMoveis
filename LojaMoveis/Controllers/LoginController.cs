@@ -251,5 +251,16 @@ namespace LojaMoveis.Controllers
 
             return Ok("Senha redefinida com sucesso.");
         }
+        [HttpGet("teste-email")]
+        public async Task<IActionResult> TesteEmail()
+        {
+            var sucesso = await _emailService.EnviarEmailAsync(
+                "hugoleonardoo2017@gmail.com",
+                "🔧 Teste de E-mail",
+                "<h3>Este é um teste de envio de e-mail via C#</h3>"
+            );
+
+            return Ok(new { sucesso });
+        }
     }
 }
