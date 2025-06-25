@@ -35,7 +35,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-public static class TokenService
+public  class TokenService
 {
     private static readonly string SecretKey = "y1K4r9a4t2P7s8Q3z6U9x4B7e2T0l8H5";
 

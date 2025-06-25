@@ -1,8 +1,10 @@
 ﻿//using LojaMoveis.DTO;
+//using LojaMoveis.Models;
 //using LojaMoveis.Services;
 //using Microsoft.AspNetCore.Authorization;
 //using Microsoft.AspNetCore.Mvc;
 //using System.Security.Claims;
+//using System.Threading.Tasks;
 
 //namespace LojaMoveis.Controllers
 //{
@@ -12,11 +14,17 @@
 //    {
 //        private readonly AdminService _adminService;
 //        private readonly ClienteService _clienteService;
+//        private readonly EmailService _emailService;
+//        private readonly ResetTokenService _resetTokenService;
+//        private readonly TokenService _tokenService;
 
-//        public LoginController(AdminService adminService, ClienteService clienteService)
+//        public LoginController(AdminService adminService, ClienteService clienteService, EmailService emailService, ResetTokenService resetTokenService, TokenService tokenService)
 //        {
 //            _adminService = adminService;
 //            _clienteService = clienteService;
+//            _emailService = emailService;
+//            _resetTokenService = resetTokenService;
+//            _tokenService = tokenService;
 //        }
 
 //        [HttpPost]
@@ -24,6 +32,7 @@
 //        {
 //            var admin = await _adminService.GetByEmailAsync(login.Email);
 //            var cliente = await _clienteService.GetByEmailAsync(login.Email);
+
 //            string tipo = "";
 //            string id = "";
 //            string email = "";
@@ -49,14 +58,12 @@
 //                return Unauthorized("Credenciais inválidas.");
 //            }
 
-//            // Gerar token JWT
 //            var token = TokenService.GenerateToken(id, tipo, email);
 
-//            // Definir cookie seguro
 //            Response.Cookies.Append("jwtToken", token, new CookieOptions
 //            {
 //                HttpOnly = true,
-//                Secure = true, // true em produção com HTTPS
+//                Secure = true,
 //                SameSite = SameSiteMode.Strict,
 //                Expires = DateTimeOffset.UtcNow.AddHours(2)
 //            });
@@ -71,11 +78,9 @@
 //            return Ok(new { mensagem = "Logout realizado com sucesso." });
 //        }
 
-
 //        [HttpGet("perfil")]
 //        [Authorize]
 //        public async Task<IActionResult> Perfil()
-
 //        {
 //            var token = Request.Cookies["jwt"];
 
@@ -91,8 +96,78 @@
 
 //            return Ok(new { email, tipo });
 //        }
-//    }
 
+//        [HttpPost("esqueci-senha")]
+//        public async Task<IActionResult> EsqueciSenha([FromBody] EsqueciSenhaDto dto)
+//        {
+//            if (dto == null || string.IsNullOrWhiteSpace(dto.Email))
+//                return BadRequest("Email inválido.");
+
+//            var email = dto.Email;
+
+//            // Aqui você coloca a lógica para buscar usuário pelo email,
+//            // gerar token e enviar email.
+
+//            // Exemplo:
+//            var cliente = await _clienteService.GetByEmailAsync(email);
+//            var admin = await _adminService.GetByEmailAsync(email);
+
+//            var usuario = cliente ?? (object)admin;
+//            if (usuario == null) return NotFound("E-mail não encontrado.");
+
+//            // Gera token, link e envia email...
+//            // ...
+
+//            return Ok("E-mail de redefinição enviado.");
+//        }
+
+//        [HttpPost("redefinir-senha")]
+//        public async Task<IActionResult> RedefinirSenha([FromBody] RedefinirSenhaDto dto)
+//        {
+//            var tokenValido = await _resetTokenService.ObterPorTokenAsync(dto.Token);
+//            if (tokenValido == null)
+//                return BadRequest("Token inválido ou expirado.");
+
+//            // Verifica se é cliente ou admin
+//            var cliente = await _clienteService.GetByEmailAsync(tokenValido.Email);
+//            var admin = await _adminService.GetByEmailAsync(tokenValido.Email);
+
+//            var novaSenhaCriptografada = BCrypt.Net.BCrypt.HashPassword(dto.NovaSenha);
+
+//            if (cliente != null)
+//            {
+//                cliente.Senha = novaSenhaCriptografada;
+//                await _clienteService.UpdateAsync(cliente.Id, cliente);
+//            }
+//            else if (admin != null)
+//            {
+//                admin.Senha = novaSenhaCriptografada;
+//                await _adminService.UpdateAsync(admin.Id, admin);
+//            }
+//            else
+//            {
+//                return NotFound("Usuário não encontrado.");
+//            }
+
+//            await _resetTokenService.RemoverTokenAsync(dto.Token);
+
+
+//            return Ok("Senha redefinida com sucesso.");
+//        }
+
+
+//        [HttpGet("teste-email")]
+//        public async Task<IActionResult> TesteEmail()
+//        {
+//            var sucesso = await _emailService.EnviarEmailAsync(
+//                "viniciusvribeiro85@gmail.com",
+//                "🔧 Teste de E-mail",
+//                "<h3>Este é um teste de envio de e-mail via C#</h3>"
+//            );
+
+//            return Ok(new { sucesso });
+//        }
+//    }
 //}
 
 
@@ -114,13 +189,15 @@ namespace LojaMoveis.Controllers
         private readonly ClienteService _clienteService;
         private readonly EmailService _emailService;
         private readonly ResetTokenService _resetTokenService;
+        private readonly TokenService _tokenService;
 
-        public LoginController(AdminService adminService, ClienteService clienteService, EmailService emailService, ResetTokenService resetTokenService)
+        public LoginController(AdminService adminService, ClienteService clienteService, EmailService emailService, ResetTokenService resetTokenService, TokenService tokenService)
         {
             _adminService = adminService;
             _clienteService = clienteService;
             _emailService = emailService;
             _resetTokenService = resetTokenService;
+            _tokenService = tokenService;
         }
 
         [HttpPost]
@@ -170,7 +247,7 @@ namespace LojaMoveis.Controllers
         [HttpPost("logout")]
         public IActionResult Logout()
         {
-            Response.Cookies.Delete("jwt");
+            Response.Cookies.Delete("jwtToken");
             return Ok(new { mensagem = "Logout realizado com sucesso." });
         }
 
@@ -178,12 +255,13 @@ namespace LojaMoveis.Controllers
         [Authorize]
         public async Task<IActionResult> Perfil()
         {
-            var token = Request.Cookies["jwt"];
+            var token = Request.Cookies["jwtToken"];
 
             if (string.IsNullOrEmpty(token))
                 return Unauthorized(new { mensagem = "Usuário não autenticado." });
 
             var principal = TokenService.ValidarToken(token);
+
             if (principal == null)
                 return Unauthorized(new { mensagem = "Token inválido ou expirado." });
 
@@ -201,18 +279,27 @@ namespace LojaMoveis.Controllers
 
             var email = dto.Email;
 
-            // Aqui você coloca a lógica para buscar usuário pelo email,
-            // gerar token e enviar email.
-
-            // Exemplo:
             var cliente = await _clienteService.GetByEmailAsync(email);
             var admin = await _adminService.GetByEmailAsync(email);
 
             var usuario = cliente ?? (object)admin;
             if (usuario == null) return NotFound("E-mail não encontrado.");
 
-            // Gera token, link e envia email...
-            // ...
+            var token = Guid.NewGuid().ToString();
+
+            await _resetTokenService.CriarAsync(new ResetToken
+            {
+                Email = email,
+                Token = token,  
+                ExpiraEm = DateTime.UtcNow.AddHours(1)
+            });
+
+            var link = $"http://localhost:5173/redefinir-senha/{token}";
+            var corpo = $"<p>Você solicitou redefinição de senha.</p><p><a href='{link}'>Clique aqui para redefinir</a></p>";
+
+            var enviado = await _emailService.EnviarEmailAsync(email, "Redefinir senha", corpo);
+            if (!enviado)
+                return StatusCode(500, "Erro ao enviar e-mail.");
 
             return Ok("E-mail de redefinição enviado.");
         }
@@ -220,25 +307,23 @@ namespace LojaMoveis.Controllers
         [HttpPost("redefinir-senha")]
         public async Task<IActionResult> RedefinirSenha([FromBody] RedefinirSenhaDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Token) || string.IsNullOrWhiteSpace(dto.NovaSenha))
-                return BadRequest("Token e nova senha são obrigatórios.");
-
-            var email = _resetTokenService.ObterEmailPorToken(dto.Token);
-            if (email == null)
+            var tokenValido = await _resetTokenService.ObterPorTokenAsync(dto.Token);
+            if (tokenValido == null)
                 return BadRequest("Token inválido ou expirado.");
 
-            // Tenta encontrar usuário
-            var cliente = await _clienteService.GetByEmailAsync(email);
-            var admin = await _adminService.GetByEmailAsync(email);
+            var cliente = await _clienteService.GetByEmailAsync(tokenValido.Email);
+            var admin = await _adminService.GetByEmailAsync(tokenValido.Email);
+
+            var novaSenhaCriptografada = BCrypt.Net.BCrypt.HashPassword(dto.NovaSenha);
 
             if (cliente != null)
             {
-                cliente.Senha = BCrypt.Net.BCrypt.HashPassword(dto.NovaSenha);
+                cliente.Senha = novaSenhaCriptografada;
                 await _clienteService.UpdateAsync(cliente.Id, cliente);
             }
             else if (admin != null)
             {
-                admin.Senha = BCrypt.Net.BCrypt.HashPassword(dto.NovaSenha);
+                admin.Senha = novaSenhaCriptografada;
                 await _adminService.UpdateAsync(admin.Id, admin);
             }
             else
@@ -246,16 +331,16 @@ namespace LojaMoveis.Controllers
                 return NotFound("Usuário não encontrado.");
             }
 
-            // Remove o token depois que foi usado
-            _resetTokenService.RemoverToken(dto.Token);
+            await _resetTokenService.RemoverTokenAsync(dto.Token);
 
             return Ok("Senha redefinida com sucesso.");
         }
+
         [HttpGet("teste-email")]
         public async Task<IActionResult> TesteEmail()
         {
             var sucesso = await _emailService.EnviarEmailAsync(
-                "hugoleonardoo2017@gmail.com",
+                "viniciusvribeiro85@gmail.com",
                 "🔧 Teste de E-mail",
                 "<h3>Este é um teste de envio de e-mail via C#</h3>"
             );
@@ -264,3 +349,4 @@ namespace LojaMoveis.Controllers
         }
     }
 }
+

@@ -4,19 +4,13 @@ using System;
 
 namespace LojaMoveis.Models
 {
-    public class ResetToken
+    public class TokenRedefinicao
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public ObjectId Id { get; set; }
 
-        [BsonElement("Email")]
         public string Email { get; set; }
-
-        [BsonElement("Token")]
         public string Token { get; set; }
-
-        [BsonElement("ExpiraEm")]
         public DateTime ExpiraEm { get; set; }
     }
 }

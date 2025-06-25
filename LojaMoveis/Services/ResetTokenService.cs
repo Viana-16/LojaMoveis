@@ -1,29 +1,47 @@
-﻿// Services/ResetTokenService.cs
-using LojaMoveis.Models;
+﻿using LojaMoveis.Models;
+using Microsoft.Extensions.Configuration;
+using MongoDB.Driver;
+using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
-public class ResetTokenService
+namespace LojaMoveis.Services
 {
-    private static List<ResetToken> tokens = new();
-
-    public void SalvarToken(string email, string token)
+    public class ResetTokenService
     {
-        tokens.RemoveAll(t => t.Email == email); // remove token antigo
-        tokens.Add(new ResetToken
+        //private readonly IMongoCollection<ResetToken> _resetTokens;
+
+        //public ResetTokenService(IConfiguration config)
+        //{
+        //    var client = new MongoClient(config.GetConnectionString("MongoDb"));
+        //    var database = client.GetDatabase("LojaMoveisDB");
+        //    _resetTokens = database.GetCollection<ResetToken>("ResetTokens");
+        //}
+
+        private readonly IMongoCollection<ResetToken> _resetTokens;
+
+        public ResetTokenService(IConfiguration config)
         {
-            Email = email,
-            Token = token,
-            ExpiraEm = DateTime.UtcNow.AddMinutes(30)
-        });
-    }
+            var client = new MongoClient(config["MongoDbSettings:ConnectionString"]);
+            var database = client.GetDatabase(config["MongoDbSettings:DatabaseName"]);
+            _resetTokens = database.GetCollection<ResetToken>("ResetTokens");
+        }
 
-    public string? ObterEmailPorToken(string token)
-    {
-        var tokenObj = tokens.FirstOrDefault(t => t.Token == token && t.ExpiraEm > DateTime.UtcNow);
-        return tokenObj?.Email;
-    }
 
-    public void RemoverToken(string token)
-    {
-        tokens.RemoveAll(t => t.Token == token);
+        public async Task CriarAsync(ResetToken token)
+        {
+            await _resetTokens.InsertOneAsync(token);
+        }
+
+        public async Task<ResetToken> ObterPorTokenAsync(string token)
+        {
+            return await _resetTokens.Find(t => t.Token == token && t.ExpiraEm > DateTime.UtcNow)
+                                     .FirstOrDefaultAsync();
+        }
+
+        public async Task RemoverTokenAsync(string token)
+        {
+            await _resetTokens.DeleteOneAsync(t => t.Token == token);
+        }
     }
 }

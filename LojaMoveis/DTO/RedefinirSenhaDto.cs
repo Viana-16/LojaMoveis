@@ -6,4 +6,5 @@ namespace LojaMoveis.DTO
         public string Token { get; set; }
         public string NovaSenha { get; set; }
     }
+
 }

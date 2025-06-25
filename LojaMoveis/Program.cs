@@ -63,6 +63,7 @@ using LojaMoveis.Configurations;
 using LojaMoveis.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 // Configura MongoDB Settings
 builder.Services.Configure<MongoDbSettings>(
@@ -80,6 +81,10 @@ builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection(
 builder.Services.AddSingleton<CloudinaryService>();
 builder.Services.AddSingleton<ResetTokenService>();
 builder.Services.AddSingleton<EmailService>();
+builder.Services.AddSingleton<TokenRedefinicaoService>();
+builder.Services.AddSingleton<TokenService>();
+
+
 
 // Configura CORS para permitir o front-end em http://localhost:5173
 builder.Services.AddCors(options =>
