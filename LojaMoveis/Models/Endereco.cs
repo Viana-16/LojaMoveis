@@ -7,7 +7,8 @@ namespace LojaMoveis.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string? Id { get; set; }  // ← torna nulo
+
 
         [BsonElement("usuarioId")]
         public string UsuarioId { get; set; }
