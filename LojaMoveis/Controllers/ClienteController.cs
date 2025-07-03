@@ -40,6 +40,16 @@ namespace LojaMoveis.Controllers
             return Ok(clientes);
         }
 
+        [HttpGet("email/{email}")]
+        public async Task<ActionResult<Cliente>> GetByEmail(string email)
+        {
+            var cliente = await _clienteService.GetByEmailAsync(email);
+            if (cliente == null)
+                return NotFound();
+
+            return Ok(cliente);
+        }
+
         // GET: api/Cliente/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Cliente>> GetById(string id)

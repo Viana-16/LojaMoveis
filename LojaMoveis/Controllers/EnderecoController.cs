@@ -35,5 +35,28 @@ namespace LojaMoveis.Controllers
             var criado = await _service.Criar(novo);
             return CreatedAtAction(nameof(GetPorUsuario), new { usuarioId = criado.UsuarioId }, criado);
         }
+        // PUT: api/Endereco/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Atualizar(string id, [FromBody] Endereco enderecoAtualizado)
+        {
+            if (string.IsNullOrWhiteSpace(id) || enderecoAtualizado == null)
+                return BadRequest("Dados inválidos.");
+
+            enderecoAtualizado.Id = id; // Garante que o ID não seja nulo
+            await _service.Atualizar(id, enderecoAtualizado);
+            return NoContent();
+        }
+
+        // DELETE: api/Endereco/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Remover(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest("ID inválido.");
+
+            await _service.Remover(id);
+            return NoContent();
+        }
+
     }
 }

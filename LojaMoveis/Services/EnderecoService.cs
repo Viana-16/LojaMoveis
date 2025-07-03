@@ -24,5 +24,15 @@ namespace LojaMoveis.Services
             await _enderecoCollection.InsertOneAsync(endereco);
             return endereco;
         }
+        public async Task Atualizar(string id, Endereco enderecoAtualizado)
+        {
+            await _enderecoCollection.ReplaceOneAsync(e => e.Id == id, enderecoAtualizado);
+        }
+
+        public async Task Remover(string id)
+        {
+            await _enderecoCollection.DeleteOneAsync(e => e.Id == id);
+        }
+
     }
 }
