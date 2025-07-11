@@ -76,6 +76,7 @@ builder.Services.Configure<EmailSettings>(
 builder.Services.AddSingleton<ProdutoService>();
 builder.Services.AddSingleton<ClienteService>();
 builder.Services.AddSingleton<AdminService>();
+builder.Services.AddSingleton<PedidoService>();
 builder.Services.AddSingleton<EnderecoService>();
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
 builder.Services.AddSingleton<CloudinaryService>();
