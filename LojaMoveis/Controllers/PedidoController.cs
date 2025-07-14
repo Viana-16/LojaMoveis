@@ -29,14 +29,12 @@ namespace LojaMoveis.Controllers
             }
         }
 
-
-        [HttpGet("usuario/{usuarioId}")]
-        public async Task<IActionResult> GetPorUsuario(string usuarioId)
+        [HttpGet("usuario/{email}")]
+        public async Task<IActionResult> GetPorUsuario(string email)
         {
-            var pedidos = await _pedidoService.GetPorUsuarioAsync(usuarioId);
+            var pedidos = await _pedidoService.GetPorUsuarioAsync(email);
             return Ok(pedidos);
         }
 
     }
-
 }

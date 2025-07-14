@@ -1,16 +1,12 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace LojaMoveis.Models
 {
     public class Pedido
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
-
-        [BsonElement("usuarioId")]
-        public string UsuarioId { get; set; }
+        [BsonElement("email")]
+        public string Email { get; set; }
 
         [BsonElement("produtos")]
         public List<ItemPedido> Produtos { get; set; }
@@ -39,6 +35,4 @@ namespace LojaMoveis.Models
         [BsonElement("quantidade")]
         public int Quantidade { get; set; }
     }
-
-
 }

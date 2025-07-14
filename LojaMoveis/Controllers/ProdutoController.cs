@@ -156,23 +156,57 @@ namespace LojaMoveis.Controllers
             return Ok("Produto adicionado com sucesso.");
         }
 
+        //// POST com imagem (Cloudinary)
+        //[HttpPost("upload")]
+        //public async Task<IActionResult> AdicionarProdutoComImagem([FromForm] Produto produto, IFormFile imagem, [FromServices] CloudinaryService cloudinaryService)
+        //{
+        //    if (imagem == null || imagem.Length == 0)
+        //        return BadRequest("Imagem não enviada.");
+
+        //    var imagemUrl = await cloudinaryService.UploadImagemAsync(imagem);
+
+        //    if (string.IsNullOrEmpty(imagemUrl))
+        //        return BadRequest("Falha ao fazer upload da imagem.");
+
+        //    produto.ImagemUrl = imagemUrl;
+
+        //    await _produtoService.CadastrarProdutoAsync(produto);
+        //    return Ok(produto);
+        //}
+
         // POST com imagem (Cloudinary)
         [HttpPost("upload")]
-        public async Task<IActionResult> AdicionarProdutoComImagem([FromForm] Produto produto, IFormFile imagem, [FromServices] CloudinaryService cloudinaryService)
+        public async Task<IActionResult> AdicionarProdutoComImagens(
+    [FromForm] Produto produto,
+    IFormFile imagem, // imagem principal
+    List<IFormFile>? imagensExtras, // lista de imagens extras
+    [FromServices] CloudinaryService cloudinaryService)
         {
             if (imagem == null || imagem.Length == 0)
-                return BadRequest("Imagem não enviada.");
+                return BadRequest("Imagem principal não enviada.");
 
+            // Upload imagem principal
             var imagemUrl = await cloudinaryService.UploadImagemAsync(imagem);
-
             if (string.IsNullOrEmpty(imagemUrl))
-                return BadRequest("Falha ao fazer upload da imagem.");
+                return BadRequest("Falha no upload da imagem principal.");
 
             produto.ImagemUrl = imagemUrl;
+
+            // Upload de imagens extras, se houver
+            if (imagensExtras != null && imagensExtras.Count > 0)
+            {
+                foreach (var img in imagensExtras)
+                {
+                    var url = await cloudinaryService.UploadImagemAsync(img);
+                    if (!string.IsNullOrEmpty(url))
+                        produto.ImagensExtras.Add(url);
+                }
+            }
 
             await _produtoService.CadastrarProdutoAsync(produto);
             return Ok(produto);
         }
+
 
         // GET: api/Produto
         [HttpGet]

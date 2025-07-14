@@ -21,11 +21,9 @@ namespace LojaMoveis.Services
             await _pedidoCollection.InsertOneAsync(pedido);
         }
 
-        public async Task<List<Pedido>> GetPorUsuarioAsync(string usuarioId)
+        public async Task<List<Pedido>> GetPorUsuarioAsync(string email)
         {
-            return await _pedidoCollection.Find(p => p.UsuarioId == usuarioId).ToListAsync();
+            return await _pedidoCollection.Find(p => p.Email == email).ToListAsync();
         }
-
     }
-
 }
