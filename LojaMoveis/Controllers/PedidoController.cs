@@ -36,5 +36,16 @@ namespace LojaMoveis.Controllers
             return Ok(pedidos);
         }
 
+        [HttpGet("por-email/{email}")]
+        public async Task<ActionResult<List<Pedido>>> GetPorEmail(string email)
+        {
+            var pedidos = await _pedidoService.GetPorEmailAsync(email);
+            if (pedidos == null || pedidos.Count == 0)
+                return NotFound("Nenhum pedido encontrado para este email.");
+
+            return Ok(pedidos);
+        }
+
+
     }
 }

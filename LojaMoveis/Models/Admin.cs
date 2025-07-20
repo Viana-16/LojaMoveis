@@ -14,5 +14,6 @@ namespace LojaMoveis.Models
 
         [BsonElement("senha")]
         public string Senha { get; set; } = null!;
+
     }
 }

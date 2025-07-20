@@ -25,5 +25,13 @@ namespace LojaMoveis.Services
         {
             return await _pedidoCollection.Find(p => p.Email == email).ToListAsync();
         }
+
+        public async Task<List<Pedido>> GetPorEmailAsync(string email)
+        {
+            return await _pedidoCollection
+                .Find(p => p.Email == email && (p.Status == "Pago" || p.Status == "Finalizado"))
+                .ToListAsync();
+        }
+
     }
 }
