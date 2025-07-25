@@ -96,4 +96,18 @@ public class ClienteService
     // Método para remover um cliente pelo ID
     public async Task RemoveAsync(string id) =>
         await _clienteCollection.DeleteOneAsync(x => x.Id == id);
+
+    public async Task<bool> UpdateNomeTelefoneAsync(string id, string novoNome, string novoTelefone)
+    {
+        var update = Builders<Cliente>.Update
+            .Set(c => c.Nome, novoNome)
+            .Set(c => c.Telefone, novoTelefone);
+
+        var result = await _clienteCollection.UpdateOneAsync(
+            c => c.Id == id,
+            update
+        );
+
+        return result.ModifiedCount > 0;
+    }
 }

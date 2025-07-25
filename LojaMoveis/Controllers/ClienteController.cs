@@ -1,4 +1,5 @@
-﻿using LojaMoveis.Models;
+﻿using LojaMoveis.DTO;
+using LojaMoveis.Models;
 using LojaMoveis.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -58,6 +59,24 @@ namespace LojaMoveis.Controllers
             if (cliente is null)
                 return NotFound();
 
+            return Ok(cliente);
+        }
+
+        [HttpPut("{id}/basico")]
+        public async Task<IActionResult> AtualizarBasico(string id, [FromBody] AtualizarClienteBasicoDto dto)
+        {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Nome) || string.IsNullOrWhiteSpace(dto.Telefone))
+                return BadRequest("Nome e telefone são obrigatórios.");
+
+            var cliente = await _clienteService.GetByIdAsync(id);
+            if (cliente == null) return NotFound("Cliente não encontrado.");
+
+            var ok = await _clienteService.UpdateNomeTelefoneAsync(id, dto.Nome, dto.Telefone);
+            if (!ok) return StatusCode(500, "Falha ao atualizar.");
+
+            // opcional: devolver o cliente atualizado
+            cliente.Nome = dto.Nome;
+            cliente.Telefone = dto.Telefone;
             return Ok(cliente);
         }
     }
