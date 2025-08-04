@@ -132,6 +132,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace LojaMoveis.Controllers
 {
@@ -250,5 +251,6 @@ namespace LojaMoveis.Controllers
             await _produtoService.DeleteAsync(id);
             return Ok("Produto removido com sucesso.");
         }
+       
     }
 }
