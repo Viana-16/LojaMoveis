@@ -34,5 +34,12 @@ namespace LojaMoveis.Services
             await _enderecoCollection.DeleteOneAsync(e => e.Id == id);
         }
 
+        public async Task<Endereco> GetPorId(string id)
+        {
+            return await _enderecoCollection.Find(e => e.Id == id).FirstOrDefaultAsync();
+        }
+
+
+
     }
 }

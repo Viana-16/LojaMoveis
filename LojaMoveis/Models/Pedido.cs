@@ -64,6 +64,8 @@ public class Pedido
 
     [BsonElement("status")]
     public string Status { get; set; }
+
+    
 }
 
 public class ItemPedido

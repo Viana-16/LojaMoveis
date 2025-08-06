@@ -23,6 +23,18 @@ namespace LojaMoveis.Controllers
             return Ok(enderecos);
         }
 
+        [HttpGet("id/{id}")]
+        public async Task<ActionResult<Endereco>> GetPorId(string id)
+        {
+            var endereco = await _service.GetPorId(id);
+            if (endereco == null)
+                return NotFound("Endereço não encontrado");
+
+            return Ok(endereco);
+        }
+
+
+
         // POST: api/Endereco
         [HttpPost]
         public async Task<ActionResult<Endereco>> Criar(Endereco novo)
