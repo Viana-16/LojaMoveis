@@ -107,11 +107,17 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure o pipeline HTTP
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "LojaMoveis API V1");
+    c.RoutePrefix = string.Empty; // Isso vai exibir o Swagger direto em "/"
+});
 
 app.UseHttpsRedirection();
 
