@@ -1,4 +1,4 @@
-﻿# Etapa 1: imagem base com ASP.NET
+# Etapa 1: imagem base com ASP.NET
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80

@@ -61,6 +61,7 @@
 
 using LojaMoveis.Configurations;
 using LojaMoveis.Services;
+using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
@@ -87,16 +88,19 @@ builder.Services.AddSingleton<TokenService>();
 
 
 
-// Configura CORS para permitir o front-end em http://localhost:5173
+// Configura CORS para permitir acesso do frontend local e online
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
+            policy.WithOrigins(
+                    "http://localhost:5173",              // ambiente local
+                    "https://moveis-classic.vercel.app"   // produção Vercel
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
 });
 
