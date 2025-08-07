@@ -65,7 +65,10 @@ public class Pedido
     [BsonElement("status")]
     public string Status { get; set; }
 
-    
+    [BsonElement("textoEndereco")] // ← adiciona isso
+    public string TextoEndereco { get; set; }
+
+
 }
 
 public class ItemPedido

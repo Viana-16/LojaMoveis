@@ -108,5 +108,12 @@ public class PedidoController : ControllerBase
         return NoContent();
     }
 
+    //[HttpPost]
+    //public async Task<ActionResult<Pedido>> Criar(Pedido novoPedido)
+    //{
+    //    await _pedidoService.Criar(novoPedido);
+    //    return CreatedAtAction(nameof(GetPorEmail), new { email = novoPedido.Email }, novoPedido);
+    //}
+
 }
 
