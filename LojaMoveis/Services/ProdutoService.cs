@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using LojaMoveis.Configurations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace LojaMoveis.Services
 {
@@ -36,5 +37,13 @@ namespace LojaMoveis.Services
 
         public async Task DeleteAsync(string id) =>
             await _produtoCollection.DeleteOneAsync(p => p.Id == id);
+
+        public async Task<List<Produto>> BuscarProdutosAsync(string termo)
+        {
+            var filter = Builders<Produto>.Filter.Regex("Nome", new BsonRegularExpression(termo, "i"));
+            return await _produtoCollection.Find(filter).ToListAsync();
+        }
+
+
     }
 }

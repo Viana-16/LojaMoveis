@@ -54,8 +54,5 @@ namespace LojaMoveis.Models
         public string? ImagemUrl { get; set; }
         public List<string> ImagensExtras { get; set; } = new List<string>(); // novas imagens extras
 
-        public double? AvaliacaoMedia { get; set; }
-        public int? QtdAvaliacoes { get; set; }
-        public List<string>? Comentarios { get; set; }
     }
 }
