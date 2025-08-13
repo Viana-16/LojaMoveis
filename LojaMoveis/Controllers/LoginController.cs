@@ -121,7 +121,7 @@ namespace LojaMoveis.Controllers
                 ExpiraEm = DateTime.UtcNow.AddHours(1)
             });
 
-            var link = $"https://lojamoveis.onrender.com/redefinir-senha/{token}";
+            var link = $"https://moveis-classic.vercel.app//redefinir-senha/{token}";
             var corpo = $"<p>Você solicitou redefinição de senha.</p><p><a href='{link}'>Clique aqui para redefinir</a></p>";
 
             var enviado = await _emailService.EnviarEmailAsync(email, "Redefinir senha", corpo);
